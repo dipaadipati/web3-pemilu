@@ -76,8 +76,8 @@ RPC_URL=http://localhost:8545
 PRIVATE_KEY=your_private_key_here
 CONTRACT_ADDRESS=your_contract_address_here
 
-# Next.js Configuration
-NEXT_PUBLIC_CONTRACT_ADDRESS=your_contract_address_here
+# Show admin panel
+NEXT_PUBLIC_ADMIN_PANEL=true
 ```
 
 ### 4. Setup Smart Contract
@@ -189,7 +189,7 @@ npm run type-check   # TypeScript type checking
    - `RPC_URL`
    - `PRIVATE_KEY` 
    - `CONTRACT_ADDRESS`
-   - `NEXT_PUBLIC_CONTRACT_ADDRESS`
+   - `NEXT_PUBLIC_ADMIN_PANEL`
 4. Deploy
 
 ## 🔗 Related Repositories
@@ -218,14 +218,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👥 Team
 
 - **Developer**: M. Adipati Rezkya
-- **Blockchain**: Hardhat + Solidity
-- **Frontend**: Next.js + TypeScript
+- **Repository**: Frontend (Next.js + TypeScript)
+- **Related**: Smart Contract Backend (Hardhat + Solidity)
 
 ## 📞 Support
 
 Jika ada pertanyaan atau issue:
 - Create GitHub Issue
 - Email: your-adptrzky@gmail.com
+- GitHub: [@dipaadipati](https://github.com/dipaadipati)
 
 ---
 
