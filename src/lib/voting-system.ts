@@ -6,13 +6,13 @@ import path from 'path';
 
 // Monkey patch untuk server-side - pastikan ini di server
 if (typeof window === 'undefined') {
-    // @ts-ignore
+    // @ts-expect-error Canvas, Image, dan ImageData harus di-import dari 'canvas' untuk server-side
     faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 }
 
 export class VotingSystem {
     private faceDescriptors: Map<string, Float32Array> = new Map();
-    public contract: any = null;
+    public contract: ethers.Contract | null = null;
     private provider: ethers.JsonRpcProvider;
     private signer: ethers.Wallet;
     private modelsLoaded: boolean = false;
@@ -104,7 +104,8 @@ export class VotingSystem {
             console.log("Image loaded successfully, dimensions:", img.width, 'x', img.height);
 
             const detection = await faceapi
-                .detectSingleFace(img as any)
+                // @ts-expect-error img harus di-cast ke tipe yang benar
+                .detectSingleFace(img as Canvas)
                 .withFaceLandmarks()
                 .withFaceDescriptor();
 
@@ -122,7 +123,7 @@ export class VotingSystem {
     }
 
     async checkExistingFace(newDescriptor: Float32Array, threshold: number = 0.6): Promise<string | null> {
-        for (let [hash, descriptor] of this.faceDescriptors) {
+        for (const [hash, descriptor] of this.faceDescriptors) {
             const distance = faceapi.euclideanDistance(newDescriptor, descriptor);
             console.log(`Comparing with existing face, distance: ${distance}`);
             if (distance < threshold) {
@@ -156,14 +157,21 @@ export class VotingSystem {
                 txHash: tx.hash,
                 gasUsed: receipt.gasUsed?.toString()
             };
-        } catch (error: any) {
-            console.error("Error adding proposal:", error);
-
-            if (error.message?.includes('Only admin')) {
-                throw new Error('Only admin can add proposals. Check if you are using the correct admin address.');
+        } catch (error: unknown) {
+            if (
+                typeof error === 'object' &&
+                error !== null &&
+                'message' in error &&
+                typeof (error as { message?: unknown }).message === 'string'
+            ) {
+                const message = (error as { message: string }).message;
+                if (message.includes('Only admin')) {
+                    throw new Error('Only admin can add proposals. Check if you are using the correct admin address.');
+                }
+                throw new Error(`Failed to add proposal: ${message}`);
             }
 
-            throw new Error(`Failed to add proposal: ${error.message}`);
+            throw new Error('Failed to add proposal: Unknown error');
         }
     }
 
@@ -179,6 +187,9 @@ export class VotingSystem {
 
             if (existingHash) {
                 console.log("Existing face found, checking blockchain...");
+                if (!this.contract) {
+                    throw new Error('Contract not initialized');
+                }
                 const voter = await this.contract.voters(existingHash);
                 if (voter.hasVoted) {
                     throw new Error('Wajah ini sudah memberikan suara sebelumnya. Hanya satu suara per wajah yang diperbolehkan.');
@@ -192,6 +203,9 @@ export class VotingSystem {
             console.log(`Submitting vote with face hash: ${faceHash.substring(0, 10)}...`);
 
             // Estimate gas and submit vote
+            if (!this.contract) {
+                throw new Error('Contract not initialized');
+            }
             const gasEstimate = await this.contract.vote.estimateGas(faceHash, proposalId);
             const tx = await this.contract.vote(faceHash, proposalId, {
                 gasLimit: gasEstimate * BigInt(120) / BigInt(100)
@@ -208,7 +222,7 @@ export class VotingSystem {
                 gasUsed: receipt.gasUsed?.toString()
             };
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Vote processing error:", error);
             throw error;
         }

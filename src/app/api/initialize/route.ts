@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { VotingSystem } from '@/lib/voting-system';
 import { getVotingSystem } from '@/lib/utils';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
     try {
         let votingSystem = await getVotingSystem();
         if (!votingSystem) {
@@ -10,11 +10,12 @@ export async function POST(request: NextRequest) {
             await votingSystem.loadModels();
             await votingSystem.initializeContract();
         }
-        
+
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
         return NextResponse.json(
-            { error: error.message }, 
+            { error: message },
             { status: 500 }
         );
     }

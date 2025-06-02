@@ -6,19 +6,20 @@ export async function POST(request: NextRequest) {
         const votingSystem = await getVotingSystem();
         if (!votingSystem) {
             return NextResponse.json(
-                { error: 'System not initialized' }, 
+                { error: 'System not initialized' },
                 { status: 500 }
             );
         }
 
         const { image, proposalId } = await request.json();
         const imageBuffer = Buffer.from(image, 'base64');
-        
+
         const result = await votingSystem.processVote(imageBuffer, proposalId);
         return NextResponse.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = (error instanceof Error) ? error.message : 'An unknown error occurred';
         return NextResponse.json(
-            { error: error.message }, 
+            { error: errorMessage },
             { status: 400 }
         );
     }

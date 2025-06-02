@@ -114,9 +114,9 @@ export default function Voting() {
                 setMessage(result.error || 'Error submitting vote');
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Vote submission error:', error);
-            setMessage('Error: ' + error.message);
+            setMessage('Error: ' + (error instanceof Error ? error.message : String(error)));
         }
 
         setIsVoting(false);
@@ -148,9 +148,9 @@ export default function Voting() {
             } else {
                 setMessage(result.error || 'Error adding proposal');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Add proposal error:', error);
-            setMessage('Error: ' + error.message);
+            setMessage('Error: ' + (error instanceof Error ? error.message : String(error)));
         }
     };
 
