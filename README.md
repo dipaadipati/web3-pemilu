@@ -33,8 +33,8 @@ web3-pemilu/
 │   │   │   ├── proposals/   # Proposal management
 │   │   │   ├── vote/        # Voting logic
 │   │   │   └── initialize/  # System initialization
-│   │   ├── voting.tsx       # Client side page
-│   │   └── page.tsx         # Server side page
+│   │   ├── voting.tsx       # Client side component
+│   │   └── page.tsx         # Server side component
 │   └── lib/
 │       ├── voting-system.ts # Core voting logic
 │       └── utils.ts         # Utility functions
@@ -225,7 +225,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Jika ada pertanyaan atau issue:
 - Create GitHub Issue
-- Email: your-adptrzky@gmail.com
+- Email: adptrzky@gmail.com
 - GitHub: [@dipaadipati](https://github.com/dipaadipati)
 
 ---
